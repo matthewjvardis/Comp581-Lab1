@@ -11,11 +11,10 @@ from pybricks.media.ev3dev import SoundFile, ImageFile
 
 ev3 = EV3Brick()
 
-rightMotor = Motor(port = Port.C, positive_direction = Direction.CLOCKWISE)
-leftMotor = Motor(port = Port.A, positive_direction = Direction.CLOCKWISE)
+motor = Motor(port = Port.A, positive_direction = Direction.COUNTERCLOCKWISE)
 
 us_sensor = UltrasonicSensor(port = Port.S2)
-touch_sensor = TouchSensor(port = Port.S4)
+touch_sensor = TouchSensor(port = Port.S3)
 
 
 """
@@ -31,56 +30,15 @@ while(pressed == 0):
 
 pressed = 0 
 
-distance = us_sensor.distance()
-
-rightMotor.run(100)
-leftMotor.run(100)
+motor.run(180)
 ev3.speaker.beep()
 
-avg_speed_per_round = 0
-area_traveled = 0 
-target_distance  = 634350
+wait(13750)
 
-for i in range(1000000):
-    
-    avg = (leftMotor.speed() + rightMotor.speed())/2
-    diff = abs(leftMotor.speed() - rightMotor.speed())
-    area_traveled = area_traveled + avg
-   
-    if( not(target_distance - 100 < area_traveled < target_distance+50)):
-   
-        if(diff > 15):
-         diff = diff/2
-       
-         if(diff/2 > 20):
-            diff = 20
+motor.run_time(0,0,then=Stop.BRAKE, wait = False)
+ev3.speaker.play_file("boing.wav")   
 
-        if(leftMotor.speed()< rightMotor.speed()):
-         rightMotor.run(avg - diff)
-         leftMotor.run(avg + diff+3.75)
-
-        elif (leftMotor.speed()> rightMotor.speed()):
-          rightMotor.run(avg + diff)
-          leftMotor.run(avg - diff)
-
-        elif(i%2==0):
-            rightMotor.run(100)
-            leftMotor.run(100)
-        else:
-            leftMotor.run(100)
-            rightMotor.run(100)
-    else:
-        rightMotor.run_time(0,0,then=Stop.BRAKE, wait = False)
-        leftMotor.run_time(0,0,then=Stop.BRAKE, wait = True)
-        rightMotor.run_time(0,0,then=Stop.BRAKE, wait = False)
-        leftMotor.run_time(0,0,then=Stop.BRAKE, wait = True)
-
-        ev3.speaker.beep()
-        ev3.speaker.play_file("boing.wav")
-        break
-   
-
-"""
+"""  
 ------- Objective 2: Move robot until it is 50cm from the wall -------
 """
 
@@ -91,43 +49,14 @@ while(pressed == 0):
 
 pressed = 0 
 
-leftMotor.run(100)
-rightMotor.run(100)
+motor.run(180)
 
 # Robots moves until 50cm from wall
-while(us_sensor.distance() > 500):
-    avg = (leftMotor.speed() + rightMotor.speed())/2
-    diff = abs(leftMotor.speed() - rightMotor.speed())
-    area_traveled = area_traveled + avg   
-   
-    if(diff > 15):
-        diff = diff/2
-       
-    if(diff/2 > 20):
-        diff = 20
+while(us_sensor.distance() > 570):
+    filler = 0
 
-    if(leftMotor.speed()< rightMotor.speed()):
-        rightMotor.run(avg - diff-0.25)
-        leftMotor.run(avg + diff+3.75)
-
-    elif (leftMotor.speed()> rightMotor.speed()):
-        rightMotor.run(avg + diff)
-        leftMotor.run(avg - diff)
-
-    elif(i%2==0):
-        rightMotor.run(100)
-        leftMotor.run(100)
-    else:
-        leftMotor.run(100)
-        rightMotor.run(100)
-
-leftMotor.run_time(0,0,then=Stop.BRAKE, wait = False)
-rightMotor.run_time(0,0,then=Stop.BRAKE, wait = True)
-leftMotor.run_time(0,0,then=Stop.BRAKE, wait = False)
-rightMotor.run_time(0,0,then=Stop.BRAKE, wait = True)
-
+motor.run_time(0,0,then=Stop.BRAKE, wait = False)
 ev3.speaker.play_file("boing.wav")
-
 
 """
 ------- Objective 3: Move robot until it touches the wall and then move back 50cm -------
@@ -140,53 +69,23 @@ while(pressed == 0):
 
 pressed = 0 
 
-rightMotor.run(100)
-leftMotor.run(100)
+motor.run(100)
 
 # Robot moves until it is touching the wall
 while((not touch_sensor.pressed()) and (us_sensor.distance() < 1000)):
-    avg = (leftMotor.speed() + rightMotor.speed())/2
-    diff = abs(leftMotor.speed() - rightMotor.speed())
-    area_traveled = area_traveled + avg
-   
-   
-    if(diff > 15):
-        diff = diff/2
-       
-    if(diff/2 > 20):
-        diff = 20
+    filler = 0
 
-    if(leftMotor.speed()< rightMotor.speed()):
-        rightMotor.run(avg - diff-0.25)
-        leftMotor.run(avg + diff+3.75)
-
-    elif (leftMotor.speed()> rightMotor.speed()):
-        rightMotor.run(avg + diff)
-        leftMotor.run(avg - diff)
-
-    elif(i%2==0):
-        rightMotor.run(100)
-        leftMotor.run(100)
-    else:
-        leftMotor.run(100)
-        rightMotor.run(100)
-
-leftMotor.run_time(0,0,then=Stop.BRAKE, wait = False)
-rightMotor.run_time(0,0,then=Stop.BRAKE, wait = True)
-
+motor.run_time(0,0,then=Stop.BRAKE, wait = False)
 ev3.speaker.play_file("boing.wav")
 
-rightMotor.run(-100)
-leftMotor.run(-100)
+motor.run(-180)
 
 wait(1000)
 
 # Robot moves backwards until it is 50cm from wall
-while (us_sensor.distance() < 500):
+while (us_sensor.distance() < 540):
     filler = 0
 
-rightMotor.run_time(0,0,then=Stop.BRAKE, wait = False)
-leftMotor.run_time(0,0,then=Stop.BRAKE, wait = True)
+motor.run_time(0,0,then=Stop.BRAKE, wait = True)
 
-#ev3.speaker.play_file("Hotline Bling.wav")
 ev3.speaker.beep()
